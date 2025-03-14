@@ -4,13 +4,14 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import App from '../../App';
 import { when } from 'vitest-when';
 import { dependenciesStore } from '../dependencies/dependencies.store';
-import { mockDependencies } from './mockDependencies';
+import { mockConnectorDependencies } from './mockDependencies';
 import { UsersEntity } from '../users/repositories/entities/user.entity';
+import { whenClickOnSubmitButton } from './test.fixture';
 
 describe('App', () => {
   const mockFunction = vi.fn();
 
-  const dependencies = mockDependencies();
+  const dependencies = mockConnectorDependencies();
   const { setDependencies } = dependenciesStore.getState();
 
   beforeAll(() => {
@@ -42,12 +43,10 @@ describe('App', () => {
     await userEvent.click(button);
     const input = await screen.findByTestId('input');
     await userEvent.type(input, 'Hello');
-    const submitInput = await screen.findByText('Envoyez le message');
-    await userEvent.click(submitInput);
+    await whenClickOnSubmitButton();
 
     // Assert
     expect(await screen.findByText('Envoyez un message à Anthony:')).toBeInTheDocument();
-    // expect(dependencies.httpConnector.post).toHaveBeenCalledWith('http://localhost:8080', { email: 'toto@gmail.com', message: 'Hello' });
     expect(dependencies.httpConnector.post).toBeCalledTimes(1);
   });
 
